@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "409097360208",
+    "firebase_url": "https://suka-suka-28347-default-rtdb.firebaseio.com",
+    "project_id": "suka-suka-28347",
+    "storage_bucket": "suka-suka-28347.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:409097360208:android:b71104d6bca10659835255",
+        "android_client_info": {
+          "package_name": "com.app.sukasuka"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAN7UEtDMKUsDwN0rlSNaHCWbHjiPtO-YE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

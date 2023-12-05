@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:id="@+id/layout_sign_in_relative"
+    tools:context=".ui.activity.SignInActivity">
+
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="160dp"
+        android:layout_height="120dp"
+        android:src="@drawable/instagram"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="150dp"
+        android:contentDescription="@string/ACTIVITY_SING_IN_IMG_CONTENT"
+        app:tint="@android:color/black" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/email_login_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_below="@+id/logo">
+
+        <EditText
+            android:id="@+id/email_login"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="20dp"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:layout_below="@+id/logo"
+            android:inputType="textEmailAddress"
+            android:drawablePadding="10dp"
+            android:drawableStart="@drawable/baseline_email_black_24"
+            android:hint="@string/ACTIVITY_SING_IN_TXT_EMAIL"
+            android:importantForAutofill="no"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
+        android:id="@+id/lblInvalidEmail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/email_login_container"
+        android:layout_marginStart="22dp"
+        android:textSize="12sp"
+        android:textStyle="italic"
+        android:text="@string/ACTIVITY_SIGN_IN_INVALID_EMAIL"
+        android:textColor="@android:color/holo_red_light"
+        android:visibility="gone"/>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/password_login_Container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/email_login_container"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="25dp">
+
+        <EditText
+            android:id="@+id/password_login"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"
+            android:paddingBottom="20dp"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:drawablePadding="10dp"
+            android:hint="@string/ACTIVITY_SING_IN_TXT_PASSWORD"
+            android:drawableStart="@drawable/icn_password"
+            android:importantForAutofill="no" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <Button
+        android:id="@+id/login_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/password_login_Container"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="25dp"
+        android:text="@string/ACTIVITY_SING_IN_BTN_LOGIN"
+        android:textAllCaps="false"
+        android:background="@drawable/rounded_corner_black"
+        android:textColor="@android:color/white"
+        android:textSize="17sp"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"/>
+
+    <View
+        android:id="@+id/button_divider"
+        android:layout_width="2dp"
+        android:layout_height="45dp"
+        android:background="@android:color/darker_gray"
+        android:layout_toEndOf="@+id/login_btn"
+        android:layout_below="@+id/password_login_Container"
+        android:layout_marginTop="28dp"/>
+
+    <Button
+        android:id="@+id/signup_link_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="25dp"
+        android:background="@android:color/transparent"
+        android:layout_toEndOf="@+id/button_divider"
+        android:layout_below="@+id/password_login_Container"
+        android:text="@string/ACTIVITY_SING_IN_BTN_NEW_ACC"
+        android:textAllCaps="false"
+        android:textColor="@android:color/darker_gray"
+        android:textSize="13sp"/>
+
+    <RelativeLayout
+        android:id="@+id/layoutLoadingView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_horizontal"
+        android:foregroundGravity="center_horizontal"
+        android:background="#CC000000"
+        android:visibility="gone">
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/animLoadingView"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:gravity="center_horizontal"
+            android:layout_marginTop="100dp"
+            android:layout_marginStart="50dp"
+            android:layout_marginEnd="50dp"/>
+
+        <TextView
+            android:id="@+id/lblLoadingViewTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/ACTIVITY_SIGN_IN_LOADING_VIEW_TITLE"
+            android:textSize="18sp"
+            android:textColor="@android:color/white"
+            android:lines="3"
+            android:gravity="center_horizontal"
+            android:layout_marginTop="20dp"
+            android:layout_marginStart="50dp"
+            android:layout_marginEnd="50dp"
+            android:layout_below="@+id/animLoadingView"/>
+
+    </RelativeLayout>
+
+</RelativeLayout>
