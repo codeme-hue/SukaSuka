@@ -359,9 +359,9 @@ class PostAdapter(private val mContext: Context, private val mPost: List<PostMod
                 {
                     val user = p0.getValue<UserModel>(UserModel::class.java)
 
-                    Picasso.get().load(user!!.getImage()).placeholder(R.drawable.profile).into(profileImage)
-                    userName.text = user.getUsername()
-                    publisher.text = user.getFullname()
+                    Picasso.get().load(user!!.image).placeholder(R.drawable.profile).into(profileImage)
+                    userName.text = user.username
+                    publisher.text = user.fullname
                 }
             }
 

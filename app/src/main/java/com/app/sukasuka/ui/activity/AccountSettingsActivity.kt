@@ -110,11 +110,11 @@ class AccountSettingsActivity : ActivityBase<ActivityAccountSettingsBinding>() {
                 if (p0.exists()) {
                     val user = p0.getValue(UserModel::class.java)
 
-                    Picasso.get().load(user!!.getImage()).placeholder(R.drawable.profile)
+                    Picasso.get().load(user!!.image).placeholder(R.drawable.profile)
                         .into(binding.profileImageViewProfileFrag)
-                    binding.usernameProfileFrag.setText(user.getUsername())
-                    binding.fullNameProfileFrag.setText(user.getFullname())
-                    binding.bioProfileFrag.setText(user.getBio())
+                    binding.usernameProfileFrag.setText(user.username)
+                    binding.fullNameProfileFrag.setText(user.fullname)
+                    binding.bioProfileFrag.setText(user.bio)
                 }
             }
 

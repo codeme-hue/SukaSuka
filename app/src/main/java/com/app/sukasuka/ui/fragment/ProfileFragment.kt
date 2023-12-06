@@ -296,10 +296,10 @@ class ProfileFragment : FragmentBase<FragmentProfileBinding>() {
                 {
                     val user = p0.getValue(UserModel::class.java)
 
-                    Picasso.get().load(user?.getImage()).placeholder(R.drawable.profile).into(binding.proImageProfileFrag)
-                    binding.profileFragmentUsername.text = user?.getUsername()
-                    binding.fullNameProfileFrag.text = user?.getFullname()
-                    binding.bioProfileFrag.text = user?.getBio()
+                    Picasso.get().load(user?.image).placeholder(R.drawable.profile).into(binding.proImageProfileFrag)
+                    binding.profileFragmentUsername.text = user?.username
+                    binding.fullNameProfileFrag.text = user?.fullname
+                    binding.bioProfileFrag.text = user?.bio
                 }
             }
 

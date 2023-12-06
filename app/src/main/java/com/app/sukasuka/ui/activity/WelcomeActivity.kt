@@ -38,7 +38,7 @@ class WelcomeActivity : ActivityBase<ActivityWelcomeBinding>() {
                 if (p0.exists())
                 {
                     val user = p0.getValue(UserModel::class.java)
-                    binding.lblUsername.text = user?.getUsername().toString()
+                    binding.lblUsername.text = user?.username.toString()
                 }
             }
 

@@ -154,9 +154,9 @@ class StoryActivity : ActivityBase<ActivityStoryBinding>(), StoriesProgressView.
                 {
                     val user = p0.getValue(UserModel::class.java)
 
-                    Picasso.get().load(user!!.getImage()).placeholder(R.drawable.profile).into(binding.storyProfileImage)
+                    Picasso.get().load(user!!.image).placeholder(R.drawable.profile).into(binding.storyProfileImage)
 
-                    binding.storyUsername.text = user.getUsername()
+                    binding.storyUsername.text = user.username
                 }
             }
 

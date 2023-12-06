@@ -68,8 +68,8 @@ class CommentsAdapter (private val mContext: Context, private val mComment: Muta
                 if (p0.exists())
                 {
                     val user = p0.getValue(UserModel::class.java)
-                    Picasso.get().load(user!!.getImage()).placeholder(R.drawable.profile).into(imageProfile)
-                    txtUsername.text = user.getUsername()
+                    Picasso.get().load(user!!.image).placeholder(R.drawable.profile).into(imageProfile)
+                    txtUsername.text = user.username
                 }
             }
 

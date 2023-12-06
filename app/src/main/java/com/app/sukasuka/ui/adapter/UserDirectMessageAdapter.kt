@@ -8,14 +8,12 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.NonNull
-import androidx.core.content.ContextCompat.startActivity
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.app.sukasuka.R
 import com.app.sukasuka.model.UserModel
-import com.app.sukasuka.ui.activity.DirectMessageActivity
+import com.app.sukasuka.ui.activity.DetailMessageActivity
 import com.app.sukasuka.ui.activity.MainActivity
-import com.app.sukasuka.ui.activity.ShowUsersActivity
 import com.app.sukasuka.ui.fragment.ProfileFragment
 import com.squareup.picasso.Picasso
 
@@ -27,7 +25,7 @@ class UserDirectMessageAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(mContext)
-            .inflate(R.layout.user_item_direct_message_layout, parent, false)
+            .inflate(R.layout.user_item_add_direct_message_layout, parent, false)
 
         return ViewHolder(view)
     }
@@ -35,15 +33,15 @@ class UserDirectMessageAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val user = mUser[position]
 
-        holder.userNameTextView.text = user.getUsername()
-        holder.userFullnameTextView.text = user.getFullname()
-        Picasso.get().load(user.getImage()).placeholder(R.drawable.profile)
+        holder.userNameTextView.text = user.username
+        holder.userFullnameTextView.text = user.fullname
+        Picasso.get().load(user.image).placeholder(R.drawable.profile)
             .into(holder.userProfileImage)
 
         holder.itemView.setOnClickListener {
             if (isFragment) {
                 val pref = mContext.getSharedPreferences("PREFS", Context.MODE_PRIVATE).edit()
-                pref.putString("profileId", user.getUID())
+                pref.putString("profileId", user.uid)
                 pref.apply()
 
                 (mContext as FragmentActivity).supportFragmentManager.beginTransaction()
@@ -51,15 +49,14 @@ class UserDirectMessageAdapter(
             }
             else {
                 val intent = Intent(mContext, MainActivity::class.java)
-                intent.putExtra("publisherId", user.getUID())
+                intent.putExtra("publisherId", user.uid)
                 mContext.startActivity(intent)
             }
         }
 
         holder.sendDirectMessageButton.setOnClickListener {
-            val intent = Intent(mContext, DirectMessageActivity::class.java)
-            intent.putExtra("receiverUID", user.getUID())
-            intent.putExtra("receiverName", user.getUsername())
+            val intent = Intent(mContext, DetailMessageActivity::class.java)
+            intent.putExtra("receiverData", user)
             mContext.startActivity(intent)
         }
     }

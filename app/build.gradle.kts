@@ -2,6 +2,7 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.gms.google-services")
+    id("kotlin-parcelize")
 }
 
 android {
@@ -54,6 +55,8 @@ dependencies {
     implementation("com.google.firebase:firebase-auth:19.3.1")
     implementation("com.google.firebase:firebase-database:19.3.0")
     implementation("com.google.firebase:firebase-storage:19.1.1")
+
+    implementation ("com.google.code.gson:gson:2.10.1")
 
     implementation("de.hdodenhof:circleimageview:3.1.0")
 

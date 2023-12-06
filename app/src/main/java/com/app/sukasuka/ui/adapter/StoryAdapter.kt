@@ -119,12 +119,12 @@ class StoryAdapter(private val mContext: Context, private val mStory: List<Story
                 {
                     val user = p0.getValue(UserModel::class.java)
 
-                    Picasso.get().load(user!!.getImage()).placeholder(R.drawable.profile).into(viewHolder.storyImage)
+                    Picasso.get().load(user!!.image).placeholder(R.drawable.profile).into(viewHolder.storyImage)
 
                     if (position != 0)
                     {
-                        Picasso.get().load(user.getImage()).placeholder(R.drawable.profile).into(viewHolder.storyImageSeen)
-                        viewHolder.storyUsername?.text = user.getUsername()
+                        Picasso.get().load(user.image).placeholder(R.drawable.profile).into(viewHolder.storyImageSeen)
+                        viewHolder.storyUsername?.text = user.username
                     }
                 }
             }

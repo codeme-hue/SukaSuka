@@ -1,5 +1,6 @@
 package com.app.sukasuka.ui.activity
 
+import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -47,26 +48,12 @@ class ShowUsersActivity : ActivityBase<ActivityShowUsersBinding>() {
             finish()
         }
 
-        when (toolbarTitle) {
-            "Direct Messages" -> {
-                val recyclerView: RecyclerView = binding.recyclerView
-                recyclerView.setHasFixedSize(true)
-                recyclerView.layoutManager = LinearLayoutManager(this)
-                userList = ArrayList()
-                userDirectMessageAdapter =
-                    UserDirectMessageAdapter(this, userList as ArrayList<UserModel>, false)
-                recyclerView.adapter = userDirectMessageAdapter
-            }
-
-            else              -> {
-                val recyclerView: RecyclerView = binding.recyclerView
-                recyclerView.setHasFixedSize(true)
-                recyclerView.layoutManager = LinearLayoutManager(this)
-                userList = ArrayList()
-                userAdapter = UserAdapter(this, userList as ArrayList<UserModel>, false)
-                recyclerView.adapter = userAdapter
-            }
-        }
+        val recyclerView: RecyclerView = binding.recyclerView
+        recyclerView.setHasFixedSize(true)
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        userList = ArrayList()
+        userAdapter = UserAdapter(this, userList as ArrayList<UserModel>, false)
+        recyclerView.adapter = userAdapter
 
         idList = ArrayList()
 
@@ -130,7 +117,7 @@ class ShowUsersActivity : ActivityBase<ActivityShowUsersBinding>() {
                     val user = snapshot.getValue(UserModel::class.java)
 
                     for (id in idList!!) {
-                        if (user?.getUID() == id) {
+                        if (user?.uid == id) {
                             (userList as ArrayList<UserModel>).add(user)
                         }
                     }
@@ -151,7 +138,8 @@ class ShowUsersActivity : ActivityBase<ActivityShowUsersBinding>() {
         })
     }
 
-    private fun getFollowing() {
+    private fun  getFollowing() {
+
         val followersRef = FirebaseDatabase.getInstance().reference
             .child("Follow").child(id!!)
             .child("Following")

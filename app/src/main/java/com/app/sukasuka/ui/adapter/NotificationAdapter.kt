@@ -120,8 +120,8 @@ class NotificationAdapter(private val mContext: Context, private val mNotificati
                 {
                     val user = p0.getValue<UserModel>(UserModel::class.java)
 
-                    Picasso.get().load(user!!.getImage()).placeholder(R.drawable.profile).into(imageView)
-                    userName.text = user.getUsername()
+                    Picasso.get().load(user!!.image).placeholder(R.drawable.profile).into(imageView)
+                    userName.text = user.username
                 }
             }
 

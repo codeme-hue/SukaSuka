@@ -80,7 +80,7 @@ class CommentsActivity : ActivityBase<ActivityCommentsBinding>() {
                 {
                     val user = p0.getValue(UserModel::class.java)
 
-                    Picasso.get().load(user!!.getImage()).placeholder(R.drawable.profile).into(binding.profileImageComment)
+                    Picasso.get().load(user!!.image).placeholder(R.drawable.profile).into(binding.profileImageComment)
                 }
             }
 
