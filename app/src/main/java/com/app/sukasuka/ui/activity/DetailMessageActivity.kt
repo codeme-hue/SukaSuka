@@ -96,7 +96,7 @@ class DetailMessageActivity : ActivityBase<ActivityDirectMessageBinding>() {
         binding.swiperefresh.isRefreshing = true
         binding.swiperefresh.isEnabled = true
 
-        val ref = FirebaseDatabase.getInstance().getReference("Messages")
+        val ref = FirebaseDatabase.getInstance().getReference("UserMessages/$fromId/$toId")
 
         ref.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
@@ -151,7 +151,8 @@ class DetailMessageActivity : ActivityBase<ActivityDirectMessageBinding>() {
             return
         }
 
-        val reference = FirebaseDatabase.getInstance().getReference("Messages").push()
+        val reference = FirebaseDatabase.getInstance().getReference("UserMessages/$fromId/$toId").push()
+        val toReference = FirebaseDatabase.getInstance().getReference("UserMessages/$toId/$fromId").push()
 
         val convertJsonSenderData = Gson().toJson(senderData)
         val convertJsonReceiverData = Gson().toJson(receiverData)
@@ -165,6 +166,7 @@ class DetailMessageActivity : ActivityBase<ActivityDirectMessageBinding>() {
                 binding.edittextChatLog.text.clear()
 //                binding.recyclerviewChatLog.smoothScrollToPosition(adapter.itemCount - 1)
             }
+        toReference.setValue(chatMessage)
 
     }
 

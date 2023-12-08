@@ -39,22 +39,6 @@ class UserDirectMessageAdapter(
             .into(holder.userProfileImage)
 
         holder.itemView.setOnClickListener {
-            if (isFragment) {
-                val pref = mContext.getSharedPreferences("PREFS", Context.MODE_PRIVATE).edit()
-                pref.putString("profileId", user.uid)
-                pref.apply()
-
-                (mContext as FragmentActivity).supportFragmentManager.beginTransaction()
-                    .replace(R.id.fragment_container, ProfileFragment()).commit()
-            }
-            else {
-                val intent = Intent(mContext, MainActivity::class.java)
-                intent.putExtra("publisherId", user.uid)
-                mContext.startActivity(intent)
-            }
-        }
-
-        holder.sendDirectMessageButton.setOnClickListener {
             val intent = Intent(mContext, DetailMessageActivity::class.java)
             intent.putExtra("receiverData", user)
             mContext.startActivity(intent)

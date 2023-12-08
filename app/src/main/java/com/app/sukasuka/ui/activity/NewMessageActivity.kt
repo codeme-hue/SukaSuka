@@ -68,7 +68,7 @@ class NewMessageActivity : ActivityBase<ActivityNewMessageBinding>() {
     private fun fetchUserMessage() {
         binding.swiperefresh.isRefreshing = true
 
-        val ref = FirebaseDatabase.getInstance().reference.child("Messages")
+        val ref = FirebaseDatabase.getInstance().reference.child("UserMessages/${FirebaseAuth.getInstance().currentUser?.uid}")
         ref.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onCancelled(databaseError: DatabaseError) {
 
@@ -76,14 +76,12 @@ class NewMessageActivity : ActivityBase<ActivityNewMessageBinding>() {
 
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val adapter = GroupAdapter<ViewHolder>()
-
-                dataSnapshot.children.forEach {
-
-                    Log.d("NewMessageActivity", it.toString())
-                    @Suppress("NestedLambdaShadowedImplicitParameter")
-                    it.getValue(ChatMessage::class.java)?.let {
-                        if (it.fromId != FirebaseAuth.getInstance().currentUser?.uid!!) {
-                            adapter.add(UserItem(it, this@NewMessageActivity))
+                dataSnapshot.children.forEach { child ->
+                    child.children .forEach {
+                        it.getValue(ChatMessage::class.java)?.let { dataChat ->
+                            if (dataChat.fromId != FirebaseAuth.getInstance().currentUser?.uid!!) {
+                                adapter.add(UserItem(dataChat, this@NewMessageActivity))
+                            }
                         }
                     }
                 }
@@ -91,11 +89,11 @@ class NewMessageActivity : ActivityBase<ActivityNewMessageBinding>() {
                 adapter.setOnItemClickListener { item, view ->
                     val userItem = item as UserItem
 
-                    val jsonSender = userItem.chat.senderData.trim('"')
-                    val senderObject = Gson().fromJson(jsonSender,UserModel::class.java)
+                    val jsonSender = userItem.chat.receiverData.trim('"')
+                    val senderObject = Gson().fromJson(jsonSender, UserModel::class.java)
 
-                    val jsonReceiver = userItem.chat.receiverData.trim('"')
-                    val receiverObject = Gson().fromJson(jsonReceiver,UserModel::class.java)
+                    val jsonReceiver = userItem.chat.senderData.trim('"')
+                    val receiverObject = Gson().fromJson(jsonReceiver, UserModel::class.java)
 
                     val intent = Intent(view.context, DetailMessageActivity::class.java)
                     intent.putExtra("senderData", senderObject)
@@ -117,17 +115,18 @@ class UserItem(val chat: ChatMessage, val context: Context) : Item<ViewHolder>()
 
     override fun bind(viewHolder: ViewHolder, position: Int) {
 
-        val json = chat.receiverData.trim('"')
-        val receiverObject = Gson().fromJson(json,UserModel::class.java)
+        val json = chat.senderData.trim('"')
+        val receiverObject = Gson().fromJson(json, UserModel::class.java)
 
-//        viewHolder.itemView.findViewById<TextView>(R.id.user_name_message).text = chat.id
+        viewHolder.itemView.findViewById<TextView>(R.id.user_name_message).text = receiverObject.username
         viewHolder.itemView.findViewById<TextView>(R.id.message).text = chat.text
 
         val targetImageView =
             viewHolder.itemView.findViewById<ImageView>(R.id.user_profile_image_message)
 
         if (receiverObject.image != null) {
-            Picasso.get().load(receiverObject.image).placeholder(R.drawable.profile).into(targetImageView)
+            Picasso.get().load(receiverObject.image).placeholder(R.drawable.profile)
+                .into(targetImageView)
         }
 
     }
