@@ -159,7 +159,7 @@ class DetailMessageActivity : ActivityBase<ActivityDirectMessageBinding>() {
 //        val senderObject = Gson().fromJson(convertJsonSenderData,UserModel::class.java)
 
         val chatMessage =
-            ChatMessage(text, fromId!!, toId!!, convertJsonSenderData, convertJsonReceiverData,System.currentTimeMillis() / 1000)
+            ChatMessage(reference.key!!, text, fromId!!, toId!!, convertJsonSenderData, convertJsonReceiverData,System.currentTimeMillis() / 1000)
         reference.setValue(chatMessage)
             .addOnSuccessListener {
                 Log.d("DirectMessageActivity", "Saved our chat message: ${reference.key}")
