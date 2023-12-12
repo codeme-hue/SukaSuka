@@ -14,6 +14,7 @@ import com.app.sukasuka.R
 import com.app.sukasuka.base.ActivityBase
 import com.app.sukasuka.databinding.ActivityNewMessageBinding
 import com.app.sukasuka.model.ChatMessage
+import com.app.sukasuka.model.GroupMessage
 import com.app.sukasuka.model.UserModel
 import com.app.sukasuka.ui.adapter.UserDirectMessageAdapter
 import com.app.sukasuka.ui.dialogfragment.AddUserMessageDialog
@@ -30,19 +31,12 @@ import com.xwray.groupie.ViewHolder
 
 class NewMessageActivity : ActivityBase<ActivityNewMessageBinding>() {
 
-    var idList: List<String>? = null
-    var userList: List<UserModel>? = null
-    private var profileId: String = ""
-
     override fun getViewBindingInflater(inflater: LayoutInflater): ActivityNewMessageBinding {
         return ActivityNewMessageBinding.inflate(inflater)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        idList = ArrayList()
-        userList = ArrayList()
 
         val toolbar: Toolbar = binding.toolbar
         setSupportActionBar(toolbar)
@@ -53,10 +47,11 @@ class NewMessageActivity : ActivityBase<ActivityNewMessageBinding>() {
         }
 
         fetchUserMessage()
+        fetchGroupMessage()
 
-        binding.swiperefresh.setOnRefreshListener {
-            fetchUserMessage()
-        }
+//        binding.swiperefresh.setOnRefreshListener {
+//            fetchUserMessage()
+//        }
 
         binding.fabAddChat.setOnClickListener {
             AddUserMessageDialog().show(supportFragmentManager, null)
@@ -66,27 +61,41 @@ class NewMessageActivity : ActivityBase<ActivityNewMessageBinding>() {
 
 
     private fun fetchUserMessage() {
-        binding.swiperefresh.isRefreshing = true
+//        binding.swiperefresh.isRefreshing = true
 
-        val ref = FirebaseDatabase.getInstance().reference.child("UserMessages/${FirebaseAuth.getInstance().currentUser?.uid}")
+        val ref =
+            FirebaseDatabase.getInstance().reference.child("Messages/DirectMessage/${FirebaseAuth.getInstance().currentUser?.uid}")
         ref.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onCancelled(databaseError: DatabaseError) {
 
             }
 
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val adapter = GroupAdapter<ViewHolder>()
+                val directMessageAdapter = GroupAdapter<ViewHolder>()
+                val latestMessagesMap =
+                    HashMap<String, ChatMessage>() // HashMap untuk menyimpan pesan terbaru dari setiap user
+
                 dataSnapshot.children.forEach { child ->
-                    child.children .forEach {
+                    child.children.forEach {
                         it.getValue(ChatMessage::class.java)?.let { dataChat ->
                             if (dataChat.fromId != FirebaseAuth.getInstance().currentUser?.uid!!) {
-                                adapter.add(UserItem(dataChat, this@NewMessageActivity))
+                                // Periksa apakah pesan terbaru dari pengguna sudah ada di HashMap
+                                val existingLatestMessage = latestMessagesMap[dataChat.fromId]
+                                if (existingLatestMessage == null || dataChat.timestamp > existingLatestMessage.timestamp) {
+                                    latestMessagesMap[dataChat.fromId] =
+                                        dataChat // Update pesan terbaru dari pengguna
+                                }
                             }
                         }
                     }
                 }
 
-                adapter.setOnItemClickListener { item, view ->
+                // Tambahkan pesan terbaru dari setiap pengguna ke adapter
+                latestMessagesMap.values.forEach { latestMessage ->
+                    directMessageAdapter.add(UserItem(latestMessage, this@NewMessageActivity))
+                }
+
+                directMessageAdapter.setOnItemClickListener { item, view ->
                     val userItem = item as UserItem
 
                     val jsonSender = userItem.chat.receiverData.trim('"')
@@ -103,8 +112,52 @@ class NewMessageActivity : ActivityBase<ActivityNewMessageBinding>() {
                     finish()
                 }
 
-                binding.recyclerviewNewmessage.adapter = adapter
-                binding.swiperefresh.isRefreshing = false
+                binding.recyclerviewNewmessage.adapter = directMessageAdapter
+//                binding.swiperefresh.isRefreshing = false
+            }
+
+        })
+    }
+
+    private fun fetchGroupMessage() {
+//        binding.swiperefresh.isRefreshing = true
+
+        val ref =
+            FirebaseDatabase.getInstance().reference.child("Messages/GroupMessage/unsia")
+        ref.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onCancelled(databaseError: DatabaseError) {
+
+            }
+
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val groupMessageAdapter = GroupAdapter<ViewHolder>()
+                val latestMessagesMap =
+                    HashMap<String, GroupMessage>() // HashMap untuk menyimpan pesan terbaru dari setiap user
+
+                dataSnapshot.children.forEach {
+                    it.getValue(GroupMessage::class.java)?.let { dataChat ->
+                        // Periksa apakah pesan terbaru dari pengguna sudah ada di HashMap
+                        val existingLatestMessage = latestMessagesMap[dataChat.senderId]
+                        if (existingLatestMessage == null || dataChat.timestamp > existingLatestMessage.timestamp) {
+                            latestMessagesMap[dataChat.senderId] = dataChat // Update pesan terbaru dari pengguna
+                        }
+                    }
+                }
+
+
+                groupMessageAdapter.add(GroupItem(latestMessagesMap.getValue(latestMessagesMap.keys.last()), this@NewMessageActivity))
+
+                groupMessageAdapter.setOnItemClickListener { item, view ->
+                    val groupItem = item as GroupItem
+                    val intent = Intent(view.context, DetailGroupMessageActivity::class.java)
+                    intent.putExtra("group_data", groupItem.group)
+
+                    startActivity(intent)
+                    finish()
+                }
+
+                binding.recyclerviewGroupMessage.adapter = groupMessageAdapter
+//                binding.swiperefresh.isRefreshing = false
             }
 
         })
@@ -118,7 +171,8 @@ class UserItem(val chat: ChatMessage, val context: Context) : Item<ViewHolder>()
         val json = chat.senderData.trim('"')
         val receiverObject = Gson().fromJson(json, UserModel::class.java)
 
-        viewHolder.itemView.findViewById<TextView>(R.id.user_name_message).text = receiverObject.username
+        viewHolder.itemView.findViewById<TextView>(R.id.user_name_message).text =
+            receiverObject.username
         viewHolder.itemView.findViewById<TextView>(R.id.message).text = chat.text
 
         val targetImageView =
@@ -133,5 +187,31 @@ class UserItem(val chat: ChatMessage, val context: Context) : Item<ViewHolder>()
 
     override fun getLayout(): Int {
         return R.layout.user_item_message_layout
+    }
+}
+
+class GroupItem(val group: GroupMessage, val context: Context) : Item<ViewHolder>() {
+
+    override fun bind(viewHolder: ViewHolder, position: Int) {
+
+//        val json = chat.senderData.trim('"')
+//        val receiverObject = Gson().fromJson(json, UserModel::class.java)
+
+        viewHolder.itemView.findViewById<TextView>(R.id.groupName).text =
+            group.groupName
+        viewHolder.itemView.findViewById<TextView>(R.id.groupMessage).text = group.message
+
+//        val targetImageView =
+//            viewHolder.itemView.findViewById<ImageView>(R.id.groupProfile)
+//
+//        if (receiverObject.image != null) {
+//            Picasso.get().load(receiverObject.image).placeholder(R.drawable.profile)
+//                .into(targetImageView)
+//        }
+
+    }
+
+    override fun getLayout(): Int {
+        return R.layout.user_item_group_layout
     }
 }

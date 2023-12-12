@@ -11,7 +11,6 @@ import com.app.sukasuka.databinding.FragmentHomeBinding
 import com.app.sukasuka.model.PostModel
 import com.app.sukasuka.model.StoryModel
 import com.app.sukasuka.ui.activity.NewMessageActivity
-import com.app.sukasuka.ui.activity.ShowUsersActivity
 import com.app.sukasuka.ui.adapter.PostAdapter
 import com.app.sukasuka.ui.adapter.StoryAdapter
 import com.google.firebase.auth.FirebaseAuth
