@@ -117,7 +117,7 @@ class HomeFragment : FragmentBase<FragmentHomeBinding>() {
                     val post = snapshot.getValue(PostModel::class.java)
 
                     for (id in (followingList as ArrayList<String>)) {
-                        if (post!!.getPublisher() == id) {
+                        if (post!!.publisher == id) {
                             postList!!.add(post)
                         }
 

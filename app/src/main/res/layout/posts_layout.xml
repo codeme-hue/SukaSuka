@@ -90,6 +90,16 @@
                 android:contentDescription="@null"/>
 
             <ImageView
+                android:id="@+id/post_image_share_btn"
+                android:layout_width="40dp"
+                android:layout_height="34dp"
+                android:src="@drawable/baseline_share_24"
+                android:layout_toEndOf="@+id/post_image_comment_btn"
+                android:layout_marginTop="3dp"
+                android:layout_marginStart="6dp"
+                android:contentDescription="@null"/>
+
+            <ImageView
                 android:id="@+id/post_save_comment_btn"
                 android:layout_width="40dp"
                 android:layout_height="39dp"

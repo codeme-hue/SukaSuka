@@ -45,12 +45,12 @@ class MyImagesAdapter(private val mContext: Context, mPost: List<PostModel>) : R
     override fun onBindViewHolder(holder: ViewHolder, position: Int)
     {
         val post: PostModel = mPost!![position]
-        Picasso.get().load(post.getPostimage()).into(holder.postImage)
+        Picasso.get().load(post.postimage).into(holder.postImage)
 
         holder.postImage.setOnClickListener {
             val editor = mContext.getSharedPreferences("PREFS", Context.MODE_PRIVATE).edit()
 
-            editor.putString("postId", post.getPostid())
+            editor.putString("postId", post.postid)
             editor.apply()
             (mContext as FragmentActivity).supportFragmentManager.beginTransaction().replace(R.id.fragment_container, PostDetailsFragment()).commit()
         }

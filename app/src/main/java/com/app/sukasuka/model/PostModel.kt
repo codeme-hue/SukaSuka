@@ -1,71 +1,14 @@
 package com.app.sukasuka.model
 
-class PostModel
-{
-    private var postid: String? = null
-    private var postimage: String? = null
-    private var publisher: String? = null
-    private var description: String? = null
-    private var dateTime: String? = null
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 
-    constructor()
 
-    constructor(postid: String?, postimage: String?, publisher: String?, description: String?, dateTime: String?)
-    {
-        this.postid = postid
-        this.postimage = postimage
-        this.publisher = publisher
-        this.description = description
-        this.dateTime = dateTime
-    }
-
-    fun setPostid(postid: String)
-    {
-        this.postid = postid
-    }
-
-    fun getPostid(): String?
-    {
-        return postid
-    }
-
-    fun setPostimage(postimage: String)
-    {
-        this.postimage = postimage
-    }
-
-    fun getPostimage(): String?
-    {
-        return postimage
-    }
-
-    fun setPublisher(publisher: String)
-    {
-        this.publisher = publisher
-    }
-
-    fun getPublisher(): String?
-    {
-        return publisher
-    }
-
-    fun setDescription(description: String)
-    {
-        this.description = description
-    }
-
-    fun getDescription(): String?
-    {
-        return description
-    }
-
-    fun setDateTime(dateTime: String)
-    {
-        this.dateTime = dateTime
-    }
-
-    fun getDateTime(): String?
-    {
-        return dateTime
-    }
-}
+@Parcelize
+data class PostModel(
+    var postid: String? = null,
+    var postimage: String? = null,
+    var publisher: String? = null,
+    var description: String? = null,
+    var dateTime: String? = null
+) : Parcelable

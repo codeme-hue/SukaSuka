@@ -141,7 +141,7 @@ class NotificationAdapter(private val mContext: Context, private val mNotificati
                 {
                     val post = p0.getValue<PostModel>(PostModel::class.java)
 
-                    Picasso.get().load(post?.getPostimage()).placeholder(R.drawable.profile).into(imageView)
+                    Picasso.get().load(post?.postimage).placeholder(R.drawable.profile).into(imageView)
                 }
             }
 

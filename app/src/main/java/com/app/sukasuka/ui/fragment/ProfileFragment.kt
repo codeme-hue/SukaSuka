@@ -323,7 +323,7 @@ class ProfileFragment : FragmentBase<FragmentProfileBinding>() {
                     {
                         val post = snapshot.getValue(PostModel::class.java)
 
-                        if (post?.getPublisher().equals(profileId))
+                        if (post?.publisher.equals(profileId))
                         {
                             (postList as ArrayList<PostModel>).add(post!!)
                         }
@@ -354,7 +354,7 @@ class ProfileFragment : FragmentBase<FragmentProfileBinding>() {
                     {
                         val post = snapShot.getValue(PostModel::class.java)
 
-                        if (post?.getPublisher() == profileId)
+                        if (post?.publisher == profileId)
                         {
                             postCounter++
                         }
@@ -411,7 +411,7 @@ class ProfileFragment : FragmentBase<FragmentProfileBinding>() {
 
                         for (key in mySavedImg!!)
                         {
-                            if (post?.getPostid() == key)
+                            if (post?.postid == key)
                             {
                                 (postListSaved as ArrayList<PostModel>).add(post)
                             }

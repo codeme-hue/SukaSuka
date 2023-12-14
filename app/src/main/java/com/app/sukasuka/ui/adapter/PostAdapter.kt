@@ -10,7 +10,9 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.NonNull
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.RecyclerView
 import com.app.sukasuka.R
 import com.app.sukasuka.model.PostModel
@@ -18,6 +20,7 @@ import com.app.sukasuka.model.UserModel
 import com.app.sukasuka.ui.activity.CommentsActivity
 import com.app.sukasuka.ui.activity.MainActivity
 import com.app.sukasuka.ui.activity.ShowUsersActivity
+import com.app.sukasuka.ui.dialogfragment.AddUserMessageDialog
 import com.app.sukasuka.ui.fragment.PostDetailsFragment
 import com.app.sukasuka.ui.fragment.ProfileFragment
 import com.google.firebase.auth.FirebaseAuth
@@ -30,7 +33,6 @@ import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.HashMap
 
 class PostAdapter(private val mContext: Context, private val mPost: List<PostModel>) : RecyclerView.Adapter<PostAdapter.ViewHolder>()
 {
@@ -47,6 +49,7 @@ class PostAdapter(private val mContext: Context, private val mPost: List<PostMod
         var likeButton: ImageView
         var commentButton: ImageView
         var saveButton: ImageView
+        var shareButton: ImageView
         var userName: TextView
         var likes: TextView
         var publisher: TextView
@@ -61,6 +64,7 @@ class PostAdapter(private val mContext: Context, private val mPost: List<PostMod
             likeButton = itemView.findViewById(R.id.post_image_like_btn)
             commentButton = itemView.findViewById(R.id.post_image_comment_btn)
             saveButton = itemView.findViewById(R.id.post_save_comment_btn)
+            shareButton = itemView.findViewById(R.id.post_image_share_btn)
             userName = itemView.findViewById(R.id.user_name_post)
             likes = itemView.findViewById(R.id.likes)
             publisher = itemView.findViewById(R.id.publisher)
@@ -89,17 +93,17 @@ class PostAdapter(private val mContext: Context, private val mPost: List<PostMod
         firebaseUser = FirebaseAuth.getInstance().currentUser
 
         val post = mPost[position]
-        Picasso.get().load(post.getPostimage()).into(holder.postImage)
-        publisherInfo(holder.profileImage, holder.userName, holder.publisher, post.getPublisher())
-        isLikes(post.getPostid(), holder.likeButton)
-        numberOfLikes(holder.likes, post.getPostid())
-        getTotalComments(holder.comments, post.getPostid())
-        checkSavedStatus(post.getPostid()!!, holder.saveButton)
+        Picasso.get().load(post.postimage).into(holder.postImage)
+        publisherInfo(holder.profileImage, holder.userName, holder.publisher, post.publisher)
+        isLikes(post.postid, holder.likeButton)
+        numberOfLikes(holder.likes, post.postid)
+        getTotalComments(holder.comments, post.postid)
+        checkSavedStatus(post.postid!!, holder.saveButton)
 
         holder.postImage.setOnClickListener {
             val editor = mContext.getSharedPreferences("PREFS", Context.MODE_PRIVATE).edit()
 
-            editor.putString("postId", post.getPostid())
+            editor.putString("postId", post.postid)
             editor.apply()
             (mContext as FragmentActivity).supportFragmentManager.beginTransaction().replace(R.id.fragment_container, PostDetailsFragment()).commit()
         }
@@ -107,7 +111,7 @@ class PostAdapter(private val mContext: Context, private val mPost: List<PostMod
         holder.publisher.setOnClickListener {
             val editor = mContext.getSharedPreferences("PREFS", Context.MODE_PRIVATE).edit()
 
-            editor.putString("profileId", post.getPublisher())
+            editor.putString("profileId", post.publisher)
             editor.apply()
             (mContext as FragmentActivity).supportFragmentManager.beginTransaction().replace(R.id.fragment_container, ProfileFragment()).commit()
         }
@@ -115,7 +119,7 @@ class PostAdapter(private val mContext: Context, private val mPost: List<PostMod
         holder.profileImage.setOnClickListener {
             val editor = mContext.getSharedPreferences("PREFS", Context.MODE_PRIVATE).edit()
 
-            editor.putString("profileId", post.getPublisher())
+            editor.putString("profileId", post.publisher)
             editor.apply()
             (mContext as FragmentActivity).supportFragmentManager.beginTransaction().replace(R.id.fragment_container, ProfileFragment()).commit()
         }
@@ -123,25 +127,25 @@ class PostAdapter(private val mContext: Context, private val mPost: List<PostMod
         holder.postImage.setOnClickListener {
             val editor = mContext.getSharedPreferences("PREFS", Context.MODE_PRIVATE).edit()
 
-            editor.putString("postId", post.getPostid())
+            editor.putString("postId", post.postid)
             editor.apply()
             (mContext as FragmentActivity).supportFragmentManager.beginTransaction().replace(R.id.fragment_container, PostDetailsFragment()).commit()
         }
 
-        if (post.getDescription().equals(""))
+        if (post.description.equals(""))
         {
             holder.description.visibility = View.GONE
         }
         else
         {
             holder.description.visibility = View.VISIBLE
-            holder.description.text = post.getDescription()
+            holder.description.text = post.description
         }
 
-        if (!post.getDateTime().isNullOrEmpty())
+        if (!post.dateTime.isNullOrEmpty())
         {
-            holder.dateTime.text = getDate(post.getDateTime()!!.toLong(), "dd/MM/yyyy EEE")
-            holder.timeAgo.text = getTimeAgo(post.getDateTime()!!.toLong())
+            holder.dateTime.text = getDate(post.dateTime!!.toLong(), "dd/MM/yyyy EEE")
+            holder.timeAgo.text = getTimeAgo(post.dateTime!!.toLong())
         }
 
         holder.likeButton.setOnClickListener {
@@ -149,17 +153,17 @@ class PostAdapter(private val mContext: Context, private val mPost: List<PostMod
             {
                 FirebaseDatabase.getInstance().reference
                     .child("Likes")
-                    .child(post.getPostid()!!)
+                    .child(post.postid!!)
                     .child(firebaseUser!!.uid)
                     .setValue(true)
 
-                addNotification(post.getPublisher()!!, post.getPostid()!!)
+                addNotification(post.publisher!!, post.postid!!)
             }
             else
             {
                 FirebaseDatabase.getInstance().reference
                     .child("Likes")
-                    .child(post.getPostid()!!)
+                    .child(post.postid!!)
                     .child(firebaseUser!!.uid)
                     .removeValue()
 
@@ -170,15 +174,15 @@ class PostAdapter(private val mContext: Context, private val mPost: List<PostMod
 
         holder.commentButton.setOnClickListener {
             val intentComment = Intent(mContext, CommentsActivity::class.java)
-            intentComment.putExtra("postId", post.getPostid())
-            intentComment.putExtra("publisherId", post.getPublisher())
+            intentComment.putExtra("postId", post.postid)
+            intentComment.putExtra("publisherId", post.publisher)
             mContext.startActivity(intentComment)
         }
 
         holder.comments.setOnClickListener {
             val intentComment = Intent(mContext, CommentsActivity::class.java)
-            intentComment.putExtra("postId", post.getPostid())
-            intentComment.putExtra("publisherId", post.getPublisher())
+            intentComment.putExtra("postId", post.postid)
+            intentComment.putExtra("publisherId", post.publisher)
             mContext.startActivity(intentComment)
         }
 
@@ -187,21 +191,28 @@ class PostAdapter(private val mContext: Context, private val mPost: List<PostMod
             {
                 FirebaseDatabase.getInstance().reference.child("Saves")
                     .child(firebaseUser!!.uid)
-                    .child(post.getPostid()!!)
+                    .child(post.postid!!)
                     .setValue(true)
             }
             else
             {
                 FirebaseDatabase.getInstance().reference.child("Saves")
                     .child(firebaseUser!!.uid)
-                    .child(post.getPostid()!!)
+                    .child(post.postid!!)
                     .removeValue()
             }
         }
 
+        holder.shareButton.setOnClickListener {
+            val manager: FragmentManager = (mContext as AppCompatActivity).supportFragmentManager
+            AddUserMessageDialog().show(manager, null)
+            // TODO
+            // buat share function dengan mengambil post id dan di lempar ke PostDetailFragment
+        }
+
         holder.likes.setOnClickListener {
             val intent = Intent(mContext, ShowUsersActivity::class.java)
-            intent.putExtra("id", post.getPostid())
+            intent.putExtra("id", post.postid)
             intent.putExtra("title", "likes")
             mContext.startActivity(intent)
         }

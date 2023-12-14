@@ -26,12 +26,6 @@ import com.xwray.groupie.ViewHolder
 
 class DetailGroupMessageActivity : ActivityBase<ActivityDetailGroupMessageBinding>() {
 
-//    private var toId: String? = ""
-//    private var fromId: String? = ""
-//    private var receiverUsername: String? = ""
-//    private var receiverData: UserModel? = null
-//    private var senderData: UserModel? = null
-
     private var groupData: GroupMessage? = null
     private var senderName: String? = ""
 
