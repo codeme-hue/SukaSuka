@@ -2,24 +2,28 @@ package com.app.sukasuka.ui.fragment
 
 import android.content.Context
 import android.content.Intent
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.app.sukasuka.base.FragmentBase
+import com.app.sukasuka.base.FragmentDialogBase
 import com.app.sukasuka.databinding.FragmentPostDetailsBinding
 import com.app.sukasuka.model.PostModel
 import com.app.sukasuka.ui.activity.MainActivity
 import com.app.sukasuka.ui.adapter.PostAdapter
+import com.app.sukasuka.ui.dialogfragment.AddUserMessageDialog
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 
-class PostDetailsFragment : FragmentBase<FragmentPostDetailsBinding>() {
+class PostDetailsFragment : FragmentDialogBase<FragmentPostDetailsBinding>(true) {
 
     private var postAdapter: PostAdapter? = null
     private var postList: MutableList<PostModel>? = null
     private var postId: String = ""
+    private var fromShare: Boolean = false
 
     override fun getViewBindingInflater(
         inflater: LayoutInflater,
@@ -31,8 +35,19 @@ class PostDetailsFragment : FragmentBase<FragmentPostDetailsBinding>() {
     override fun subscribeUI() {
         val preferences = context?.getSharedPreferences("PREFS", Context.MODE_PRIVATE)
 
-        if (preferences != null) {
-            postId = preferences.getString("postId", "none")!!
+        arguments?.let {
+            fromShare = it.getBoolean("fromShare")
+        }
+
+        if (fromShare) {
+            arguments?.let {
+                postId = it.getString("keyPost", "")
+            }
+        }
+        else {
+            if (preferences != null) {
+                postId = preferences.getString("postId", "none")!!
+            }
         }
 
         val recyclerView = binding.recyclerViewPostDetails
@@ -54,14 +69,11 @@ class PostDetailsFragment : FragmentBase<FragmentPostDetailsBinding>() {
         }
     }
 
-    private fun retrievePosts()
-    {
+    private fun retrievePosts() {
         val postsRef = FirebaseDatabase.getInstance().reference.child("Posts").child(postId)
 
-        postsRef.addValueEventListener(object : ValueEventListener
-        {
-            override fun onDataChange(p0: DataSnapshot)
-            {
+        postsRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(p0: DataSnapshot) {
                 postList?.clear()
                 val post = p0.getValue(PostModel::class.java)
                 postList!!.add(post!!)
@@ -70,5 +82,14 @@ class PostDetailsFragment : FragmentBase<FragmentPostDetailsBinding>() {
 
             override fun onCancelled(p0: DatabaseError) {}
         })
+    }
+
+    companion object {
+        fun newInstance(keyPost: String, fromShare: Boolean) = PostDetailsFragment().apply {
+            arguments = Bundle().apply {
+                putString("keyPost", keyPost)
+                putBoolean("fromShare", fromShare)
+            }
+        }
     }
 }

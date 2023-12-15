@@ -1,17 +1,22 @@
 package com.app.sukasuka.ui.activity
 
+import android.content.Context
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
+import androidx.fragment.app.FragmentActivity
 import com.app.sukasuka.R
 import com.app.sukasuka.base.ActivityBase
 import com.app.sukasuka.databinding.ActivityDirectMessageBinding
 import com.app.sukasuka.model.ChatMessage
+import com.app.sukasuka.model.PostModel
 import com.app.sukasuka.model.UserModel
+import com.app.sukasuka.ui.fragment.PostDetailsFragment
 import com.app.sukasuka.utils.DateUtils
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.ChildEventListener
@@ -29,6 +34,7 @@ class DetailMessageActivity : ActivityBase<ActivityDirectMessageBinding>() {
 
     private var toId: String? = ""
     private var fromId: String? = ""
+    private var postId: String? = ""
     private var receiverUsername: String? = ""
     private var receiverData: UserModel? = null
     private var senderData: UserModel? = null
@@ -44,6 +50,7 @@ class DetailMessageActivity : ActivityBase<ActivityDirectMessageBinding>() {
 
         val intent = intent
         receiverData = intent.getParcelableExtra("receiverData")
+        postId = intent.getStringExtra("keyPost")
         toId = receiverData?.uid
         receiverUsername = receiverData?.username
 
@@ -61,6 +68,12 @@ class DetailMessageActivity : ActivityBase<ActivityDirectMessageBinding>() {
 
         binding.recyclerviewChatLog.adapter = adapter
 
+        if (postId != null) {
+            Handler().postDelayed({
+                performSharePost()
+            }, 2000)
+        }
+
         senderInfo()
         listenForMessages()
         initClick()
@@ -72,16 +85,12 @@ class DetailMessageActivity : ActivityBase<ActivityDirectMessageBinding>() {
         }
     }
 
-    private fun senderInfo()
-    {
+    private fun senderInfo() {
         val usersRef = FirebaseDatabase.getInstance().reference.child("Users").child(fromId!!)
 
-        usersRef.addValueEventListener(object : ValueEventListener
-        {
-            override fun onDataChange(p0: DataSnapshot)
-            {
-                if (p0.exists())
-                {
+        usersRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(p0: DataSnapshot) {
+                if (p0.exists()) {
                     senderData = p0.getValue(UserModel::class.java)
 
                 }
@@ -96,7 +105,8 @@ class DetailMessageActivity : ActivityBase<ActivityDirectMessageBinding>() {
         binding.swiperefresh.isRefreshing = true
         binding.swiperefresh.isEnabled = true
 
-        val ref = FirebaseDatabase.getInstance().getReference("Messages/DirectMessage/$fromId/$toId")
+        val ref =
+            FirebaseDatabase.getInstance().getReference("Messages/DirectMessage/$fromId/$toId")
 
         ref.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
@@ -116,10 +126,26 @@ class DetailMessageActivity : ActivityBase<ActivityDirectMessageBinding>() {
                 Log.d("DirectMessageActivity", dataSnapshot.key.toString())
                 dataSnapshot.getValue(ChatMessage::class.java)?.let {
                     if (it.fromId == FirebaseAuth.getInstance().uid) {
-                        adapter.add(ChatFromItem(senderData!!, it.text, it.timestamp))
+                        adapter.add(
+                            ChatFromItem(
+                                this@DetailMessageActivity,
+                                senderData!!,
+                                postId.toString(),
+                                it.text,
+                                it.timestamp
+                            )
+                        )
                     }
                     else {
-                        adapter.add(ChatToItem(receiverData!!, it.text, it.timestamp))
+                        adapter.add(
+                            ChatToItem(
+                                this@DetailMessageActivity,
+                                receiverData!!,
+                                postId.toString(),
+                                it.text,
+                                it.timestamp
+                            )
+                        )
                     }
                 }
                 binding.recyclerviewChatLog.scrollToPosition(adapter.itemCount - 1)
@@ -152,15 +178,27 @@ class DetailMessageActivity : ActivityBase<ActivityDirectMessageBinding>() {
             return
         }
 
-        val reference = FirebaseDatabase.getInstance().getReference("Messages/DirectMessage/$fromId/$toId").push()
-        val toReference = FirebaseDatabase.getInstance().getReference("Messages/DirectMessage/$toId/$fromId").push()
+        val reference =
+            FirebaseDatabase.getInstance().getReference("Messages/DirectMessage/$fromId/$toId")
+                .push()
+        val toReference =
+            FirebaseDatabase.getInstance().getReference("Messages/DirectMessage/$toId/$fromId")
+                .push()
 
         val convertJsonSenderData = Gson().toJson(senderData)
         val convertJsonReceiverData = Gson().toJson(receiverData)
 //        val senderObject = Gson().fromJson(convertJsonSenderData,UserModel::class.java)
 
         val chatMessage =
-            ChatMessage(reference.key!!, text, fromId!!, toId!!, convertJsonSenderData, convertJsonReceiverData,System.currentTimeMillis() / 1000)
+            ChatMessage(
+                reference.key!!,
+                text,
+                fromId!!,
+                toId!!,
+                convertJsonSenderData,
+                convertJsonReceiverData,
+                System.currentTimeMillis() / 1000
+            )
         reference.setValue(chatMessage)
             .addOnSuccessListener {
                 binding.edittextChatLog.text.clear()
@@ -170,9 +208,38 @@ class DetailMessageActivity : ActivityBase<ActivityDirectMessageBinding>() {
 
     }
 
+    private fun performSharePost() {
+        val reference =
+            FirebaseDatabase.getInstance().getReference("Messages/DirectMessage/$fromId/$toId")
+                .push()
+        val toReference =
+            FirebaseDatabase.getInstance().getReference("Messages/DirectMessage/$toId/$fromId")
+                .push()
+
+        val convertJsonSenderData = Gson().toJson(senderData)
+        val convertJsonReceiverData = Gson().toJson(receiverData)
+
+        val chatMessage =
+            ChatMessage(
+                reference.key!!,
+                postId.toString(),
+                fromId!!,
+                toId!!,
+                convertJsonSenderData,
+                convertJsonReceiverData,
+                System.currentTimeMillis() / 1000
+            )
+        reference.setValue(chatMessage)
+            .addOnSuccessListener {
+                binding.edittextChatLog.text.clear()
+            }
+        toReference.setValue(chatMessage)
+
+    }
+
 }
 
-class ChatFromItem(val user: UserModel, val text: String, val timestamp: Long) :
+class ChatFromItem(val mContext: Context, val user: UserModel, val postId: String, val text: String, val timestamp: Long) :
     Item<ViewHolder>() {
 
     override fun bind(viewHolder: ViewHolder, position: Int) {
@@ -185,6 +252,18 @@ class ChatFromItem(val user: UserModel, val text: String, val timestamp: Long) :
             viewHolder.itemView.findViewById<ImageView>(R.id.imageview_chat_from_row)
 
         Picasso.get().load(user.image).placeholder(R.drawable.profile).into(targetImageView)
+
+        viewHolder.itemView.findViewById<TextView>(R.id.textview_from_row).setOnClickListener {
+            val parts = text.split(" ")
+            if (parts.size == 2 && parts[0].startsWith("-")) {
+                val code = parts[0]
+                val name = parts[1]
+                if (name == "SharePost") {
+                    Log.e("test from", "cocok $code")
+                    PostDetailsFragment.newInstance(code, true).show((mContext as FragmentActivity).supportFragmentManager, null)
+                }
+            }
+        }
     }
 
     override fun getLayout(): Int {
@@ -193,7 +272,14 @@ class ChatFromItem(val user: UserModel, val text: String, val timestamp: Long) :
 
 }
 
-class ChatToItem(val user: UserModel, val text: String, private val timestamp: Long) : Item<ViewHolder>() {
+class ChatToItem(
+    val mContext: Context,
+    val user: UserModel,
+    val postId: String,
+    val text: String,
+    private val timestamp: Long
+) :
+    Item<ViewHolder>() {
 
     override fun bind(viewHolder: ViewHolder, position: Int) {
         viewHolder.itemView.findViewById<TextView>(R.id.textview_to_row).text = text
@@ -204,6 +290,19 @@ class ChatToItem(val user: UserModel, val text: String, private val timestamp: L
             viewHolder.itemView.findViewById<ImageView>(R.id.imageview_chat_to_row)
 
         Picasso.get().load(user.image).placeholder(R.drawable.profile).into(targetImageView)
+
+
+        viewHolder.itemView.findViewById<TextView>(R.id.textview_to_row).setOnClickListener {
+            val parts = text.split(" ")
+            if (parts.size == 2 && parts[0].startsWith("-")) {
+                val code = parts[0]
+                val name = parts[1]
+                if (name == "SharePost") {
+                    Log.e("test to", "cocok $code")
+                    PostDetailsFragment.newInstance(code, true).show((mContext as FragmentActivity).supportFragmentManager, null)
+                }
+            }
+        }
     }
 
     override fun getLayout(): Int {

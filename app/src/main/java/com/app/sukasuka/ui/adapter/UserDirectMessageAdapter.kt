@@ -20,7 +20,8 @@ import com.squareup.picasso.Picasso
 class UserDirectMessageAdapter(
     private var mContext: Context,
     private var mUser: List<UserModel>,
-    private var isFragment: Boolean = false
+    private var isFragment: Boolean = false,
+    private var postId: String = ""
 ) : RecyclerView.Adapter<UserDirectMessageAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -41,6 +42,7 @@ class UserDirectMessageAdapter(
         holder.itemView.setOnClickListener {
             val intent = Intent(mContext, DetailMessageActivity::class.java)
             intent.putExtra("receiverData", user)
+            intent.putExtra("keyPost", postId)
             mContext.startActivity(intent)
         }
     }

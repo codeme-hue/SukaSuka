@@ -205,9 +205,7 @@ class PostAdapter(private val mContext: Context, private val mPost: List<PostMod
 
         holder.shareButton.setOnClickListener {
             val manager: FragmentManager = (mContext as AppCompatActivity).supportFragmentManager
-            AddUserMessageDialog().show(manager, null)
-            // TODO
-            // buat share function dengan mengambil post id dan di lempar ke PostDetailFragment
+            AddUserMessageDialog.newInstance(post.postid!! + " SharePost").show(manager, null)
         }
 
         holder.likes.setOnClickListener {

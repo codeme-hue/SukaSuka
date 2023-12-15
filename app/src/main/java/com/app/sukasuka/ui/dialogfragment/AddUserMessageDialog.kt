@@ -1,6 +1,7 @@
 package com.app.sukasuka.ui.dialogfragment
 
 import android.content.Context
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -19,7 +20,7 @@ class AddUserMessageDialog: FragmentDialogBase<DialogFragmentAddUserMessageBindi
 
     private var idList: List<String>? = null
     private var userList: List<UserModel>? = null
-    private var profileId: String = ""
+    private var postId: String = ""
 
     private var userDirectMessageAdapter: UserDirectMessageAdapter? = null
 
@@ -35,12 +36,16 @@ class AddUserMessageDialog: FragmentDialogBase<DialogFragmentAddUserMessageBindi
         idList = ArrayList()
         userList = ArrayList()
 
+        arguments?.let {
+            postId = it.getString("keyPost", "")
+        }
+
         val recyclerView: RecyclerView = binding.recyclerviewAddUserMessage
         recyclerView.setHasFixedSize(true)
         recyclerView.layoutManager = LinearLayoutManager(mContext)
         userList = ArrayList()
         userDirectMessageAdapter =
-            UserDirectMessageAdapter(mContext, userList as ArrayList<UserModel>, false)
+            UserDirectMessageAdapter(mContext, userList as ArrayList<UserModel>, false, postId)
         recyclerView.adapter = userDirectMessageAdapter
 
         showUsers()
@@ -92,5 +97,13 @@ class AddUserMessageDialog: FragmentDialogBase<DialogFragmentAddUserMessageBindi
 
             override fun onCancelled(p0: DatabaseError) {}
         })
+    }
+
+    companion object {
+        fun newInstance(keyPost: String) = AddUserMessageDialog().apply {
+            arguments = Bundle().apply {
+                putString("keyPost", keyPost)
+            }
+        }
     }
 }
