@@ -28,8 +28,7 @@ class SplashScreenActivity : ActivityBase<ActivitySplashScreenBinding>() {
         binding.lblDesmond.startAnimation(myAnim)
 
         val signInIntent = Intent(this, SignInActivity::class.java)
-//        val welcomeIntent = Intent(this, WelcomeActivity::class.java)
-        val mainIntent = Intent(this, MainActivity::class.java)
+        val welcomeIntent = Intent(this, WelcomeActivity::class.java)
         val timer = object : Thread()
         {
             override fun run()
@@ -44,7 +43,7 @@ class SplashScreenActivity : ActivityBase<ActivitySplashScreenBinding>() {
                 {
                     if (FirebaseAuth.getInstance().currentUser != null)
                     {
-                        startActivity(mainIntent)
+                        startActivity(welcomeIntent)
                     }
                     else
                     {

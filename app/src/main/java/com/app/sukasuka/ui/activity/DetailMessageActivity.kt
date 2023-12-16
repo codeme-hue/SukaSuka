@@ -68,7 +68,7 @@ class DetailMessageActivity : ActivityBase<ActivityDirectMessageBinding>() {
 
         binding.recyclerviewChatLog.adapter = adapter
 
-        if (postId != null) {
+        if (postId != "" && postId != null) {
             Handler().postDelayed({
                 performSharePost()
             }, 2000)

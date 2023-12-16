@@ -184,10 +184,10 @@ class StoryActivity : ActivityBase<ActivityStoryBinding>(), StoriesProgressView.
                     val story: StoryModel? = snapshot.getValue(StoryModel::class.java)
                     val timeCurrent = System.currentTimeMillis()
 
-                    if (timeCurrent > story?.getTimeStart()!! && timeCurrent < story.getTimeEnd()!!)
+                    if (timeCurrent > story?.timestart!! && timeCurrent < story.timeend!!)
                     {
-                        (imageList as ArrayList<String>).add(story.getImageUrl()!!)
-                        (storyIdsList as ArrayList<String>).add(story.getStoryId()!!)
+                        (imageList as ArrayList<String>).add(story.imageurl!!)
+                        (storyIdsList as ArrayList<String>).add(story.storyid!!)
                     }
                 }
 

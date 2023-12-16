@@ -1,6 +1,5 @@
 package com.app.sukasuka.ui.activity
 
-import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Intent
 import android.net.Uri
@@ -9,6 +8,10 @@ import android.view.LayoutInflater
 import android.widget.Toast
 import com.app.sukasuka.base.ActivityBase
 import com.app.sukasuka.databinding.ActivityAddPostBinding
+import com.canhub.cropper.CropImage
+import com.canhub.cropper.CropImageContract
+import com.canhub.cropper.CropImageContractOptions
+import com.canhub.cropper.CropImageOptions
 import com.google.android.gms.tasks.Continuation
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
@@ -17,7 +20,6 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.StorageTask
 import com.google.firebase.storage.UploadTask
-import com.theartofdev.edmodo.cropper.CropImage
 
 class AddPostActivity : ActivityBase<ActivityAddPostBinding>() {
 
@@ -44,20 +46,25 @@ class AddPostActivity : ActivityBase<ActivityAddPostBinding>() {
             finish()
         }
 
-        CropImage.activity()
-            .setAspectRatio(2,2)
-            .start(this)
+        cropImage.launch(
+            CropImageContractOptions(
+                uri = null,
+                cropImageOptions = CropImageOptions(
+                    imageSourceIncludeGallery = true,
+                    imageSourceIncludeCamera = true
+                )
+            )
+        )
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?)
-    {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE && resultCode == Activity.RESULT_OK && data != null)
-        {
-            val result = CropImage.getActivityResult(data)
-            imageUri = result.uri
-            binding.imagePost.setImageURI(imageUri)
+    private val cropImage = registerForActivityResult(CropImageContract()) { result ->
+        if (result.isSuccessful) {
+            // Use the returned uri.
+            imageUri = result.uriContent
+            val uriFilePath = result.getUriFilePath(this) // optional usage
+        } else {
+            // An error occurred.
+            val exception = result.error
         }
     }
 

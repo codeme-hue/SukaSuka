@@ -64,7 +64,7 @@ dependencies {
 
     implementation ("com.xwray:groupie:2.1.0")
 
-    implementation ("com.theartofdev.edmodo:android-image-cropper:2.8.+")
+    implementation("com.vanniktech:android-image-cropper:4.5.0")
 
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
 

@@ -3,6 +3,7 @@ package com.app.sukasuka.ui.adapter
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -75,17 +76,19 @@ class StoryAdapter(private val mContext: Context, private val mStory: List<Story
     override fun getItemCount(): Int
     {
         return mStory.size
+        Log.e("dddd", mStory.size.toString())
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int)
     {
         val story = mStory[position]
+        Log.e("Cek", story.storyid.toString())
 
-        userInfo(holder, story.getUserId()!!, position)
+        userInfo(holder, story.userid!!, position)
 
         if (holder.adapterPosition != 0)
         {
-            seenStory(holder, story.getUserId()!!)
+            seenStory(holder, story.userid!!)
         }
 
         if (holder.adapterPosition == 0)
@@ -101,7 +104,7 @@ class StoryAdapter(private val mContext: Context, private val mStory: List<Story
             else
             {
                 val intent = Intent(mContext, StoryActivity::class.java)
-                intent.putExtra("userId", story.getUserId())
+                intent.putExtra("userId", story.userid)
                 mContext.startActivity(intent)
             }
         }
@@ -146,7 +149,7 @@ class StoryAdapter(private val mContext: Context, private val mStory: List<Story
                 for (snapshot in p0.children)
                 {
                     if (!snapshot.child("views").child(FirebaseAuth.getInstance().currentUser!!.uid).exists() &&
-                            System.currentTimeMillis() < snapshot.getValue(StoryModel::class.java)?.getTimeEnd()!!)
+                            System.currentTimeMillis() < snapshot.getValue(StoryModel::class.java)?.timeend!!)
                     {
                         i++
                     }
@@ -183,7 +186,7 @@ class StoryAdapter(private val mContext: Context, private val mStory: List<Story
                 {
                     val story = snapshot.getValue(StoryModel::class.java)
 
-                    if (timeCurrent > story!!.getTimeStart()!! && timeCurrent < story.getTimeEnd()!!)
+                    if (timeCurrent > story!!.timestart!! && timeCurrent < story.timeend!!)
                     {
                         counter++
                     }

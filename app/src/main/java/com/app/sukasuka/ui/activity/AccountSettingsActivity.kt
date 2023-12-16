@@ -1,6 +1,5 @@
 package com.app.sukasuka.ui.activity
 
-import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
@@ -13,6 +12,9 @@ import com.app.sukasuka.R
 import com.app.sukasuka.base.ActivityBase
 import com.app.sukasuka.databinding.ActivityAccountSettingsBinding
 import com.app.sukasuka.model.UserModel
+import com.canhub.cropper.CropImageContract
+import com.canhub.cropper.CropImageContractOptions
+import com.canhub.cropper.CropImageOptions
 import com.google.android.gms.tasks.Continuation
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
@@ -26,7 +28,6 @@ import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.StorageTask
 import com.google.firebase.storage.UploadTask
 import com.squareup.picasso.Picasso
-import com.theartofdev.edmodo.cropper.CropImage
 
 class AccountSettingsActivity : ActivityBase<ActivityAccountSettingsBinding>() {
 
@@ -62,24 +63,35 @@ class AccountSettingsActivity : ActivityBase<ActivityAccountSettingsBinding>() {
         binding.changeImageTextBtn.setOnClickListener {
             checker = true
 
-            CropImage.activity()
-                .setAspectRatio(1, 1)
-                .start(this)
+            cropImage.launch(
+                CropImageContractOptions(
+                    uri = null,
+                    cropImageOptions = CropImageOptions(
+                        imageSourceIncludeGallery = true,
+                        imageSourceIncludeCamera = true
+                    )
+                )
+            )
         }
 
         binding.profileImageViewProfileFrag.setOnClickListener {
             checker = true
 
-            CropImage.activity()
-                .setAspectRatio(1, 1)
-                .start(this)
+            cropImage.launch(
+                CropImageContractOptions(
+                    uri = null,
+                    cropImageOptions = CropImageOptions(
+                        imageSourceIncludeGallery = true,
+                        imageSourceIncludeCamera = true
+                    )
+                )
+            )
         }
 
         binding.saveProfileBtn.setOnClickListener {
             if (checker) {
                 uploadImageAndUpdateInfo()
-            }
-            else {
+            } else {
                 updateUserInfoOnly()
             }
         }
@@ -91,13 +103,15 @@ class AccountSettingsActivity : ActivityBase<ActivityAccountSettingsBinding>() {
         userInfo()
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE && resultCode == Activity.RESULT_OK && data != null) {
-            val result = CropImage.getActivityResult(data)
-            imageUri = result.uri
+    private val cropImage = registerForActivityResult(CropImageContract()) { result ->
+        if (result.isSuccessful) {
+            // Use the returned uri.
+            imageUri = result.uriContent
+            val uriFilePath = result.getUriFilePath(this) // optional usage
             binding.profileImageViewProfileFrag.setImageURI(imageUri)
+        } else {
+            // An error occurred.
+            val exception = result.error
         }
     }
 
@@ -132,11 +146,11 @@ class AccountSettingsActivity : ActivityBase<ActivityAccountSettingsBinding>() {
                 Toast.makeText(this, "Username is Required!", Toast.LENGTH_LONG).show()
             }
 
-            TextUtils.isEmpty(binding.bioProfileFrag.text.toString())      -> {
+            TextUtils.isEmpty(binding.bioProfileFrag.text.toString()) -> {
                 Toast.makeText(this, "Bio is Required!", Toast.LENGTH_LONG).show()
             }
 
-            else                                                           -> {
+            else -> {
                 val usersRef = FirebaseDatabase.getInstance().reference.child("Users")
                 val userMap = HashMap<String, Any>()
 
@@ -161,7 +175,7 @@ class AccountSettingsActivity : ActivityBase<ActivityAccountSettingsBinding>() {
 
     private fun uploadImageAndUpdateInfo() {
         when {
-            imageUri == null                                               -> {
+            imageUri == null -> {
                 Toast.makeText(this, "Please select your profile picture.", Toast.LENGTH_LONG)
                     .show()
             }
@@ -174,11 +188,11 @@ class AccountSettingsActivity : ActivityBase<ActivityAccountSettingsBinding>() {
                 Toast.makeText(this, "Username is Required!", Toast.LENGTH_LONG).show()
             }
 
-            TextUtils.isEmpty(binding.bioProfileFrag.text.toString())      -> {
+            TextUtils.isEmpty(binding.bioProfileFrag.text.toString()) -> {
                 Toast.makeText(this, "Bio is Required!", Toast.LENGTH_LONG).show()
             }
 
-            else                                                           -> {
+            else -> {
                 val progressDialog = ProgressDialog(this)
                 progressDialog.setTitle("Account Settings")
                 progressDialog.setMessage("Please wait, while we are updating your profile...")
@@ -224,8 +238,7 @@ class AccountSettingsActivity : ActivityBase<ActivityAccountSettingsBinding>() {
                         startActivity(intent)
                         finish()
                         progressDialog.dismiss()
-                    }
-                    else {
+                    } else {
                         progressDialog.dismiss()
                     }
                 }
