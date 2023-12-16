@@ -13,6 +13,7 @@ import com.app.sukasuka.ui.fragment.HomeFragment
 import com.app.sukasuka.ui.fragment.NotificationFragment
 import com.app.sukasuka.ui.fragment.ProfileFragment
 import com.app.sukasuka.ui.fragment.SearchFragment
+import com.app.sukasuka.utils.PermissionUtils
 
 
 class MainActivity : ActivityBase<ActivityMainBinding>() {
@@ -52,6 +53,11 @@ class MainActivity : ActivityBase<ActivityMainBinding>() {
             }
             true
         }
+        checkPermission()
+    }
+
+    private fun checkPermission() {
+        PermissionUtils.requestStoragePermission(this)
     }
 
     private fun routeToFragment(fragment: Fragment)

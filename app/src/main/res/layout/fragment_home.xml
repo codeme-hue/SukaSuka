@@ -24,7 +24,7 @@
                 <ImageView
                     android:layout_width="100dp"
                     android:layout_height="50dp"
-                    android:src="@drawable/instagram"
+                    android:src="@drawable/logo"
                     android:layout_alignParentStart="true"
                     android:contentDescription="@null"/>
 

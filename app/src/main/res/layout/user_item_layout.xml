@@ -46,7 +46,7 @@
         <Button
             android:id="@+id/follow_btn_search"
             android:layout_width="90dp"
-            android:layout_height="30dp"
+            android:layout_height="wrap_content"
             android:background="@drawable/button_black_background"
             android:text="@string/USER_ITEM_LAYOUT_BTN_FOLLOW"
             android:textAllCaps="false"

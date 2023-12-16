@@ -13,7 +13,7 @@
         android:id="@+id/logo"
         android:layout_width="160dp"
         android:layout_height="90dp"
-        android:src="@drawable/instagram"
+        android:src="@drawable/logo"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="110dp"
         android:contentDescription="@string/ACTIVITY_SING_UP_IMG_CONTENT"

@@ -1,7 +1,9 @@
 package com.app.sukasuka.ui.fragment
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,6 +15,7 @@ import com.app.sukasuka.model.StoryModel
 import com.app.sukasuka.ui.activity.NewMessageActivity
 import com.app.sukasuka.ui.adapter.PostAdapter
 import com.app.sukasuka.ui.adapter.StoryAdapter
+import com.app.sukasuka.utils.PermissionUtils
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -43,21 +46,21 @@ class HomeFragment : FragmentBase<FragmentHomeBinding>() {
         recyclerView.layoutManager = linearLayoutManager
 
         postList = ArrayList()
-        postAdapter = context?.let { PostAdapter(it, postList as ArrayList<PostModel>) }
+        postAdapter = PostAdapter(requireContext(), postList as ArrayList<PostModel>)
         recyclerView.adapter = postAdapter
         recyclerView.setHasFixedSize(true)
 
         //Recycler View Story
         val recyclerViewStory = binding.recyclerViewStory
         val linearLayoutManager2 = LinearLayoutManager(
-            context,
+            requireContext(),
             LinearLayoutManager.HORIZONTAL,
             false
         ) // To set scroll with Horizontal
         recyclerViewStory.layoutManager = linearLayoutManager2
 
         storyList = ArrayList()
-        storyAdapter = context?.let { StoryAdapter(it, storyList as ArrayList<StoryModel>) }
+        storyAdapter = StoryAdapter(requireContext(), storyList as ArrayList<StoryModel>)
         recyclerViewStory.adapter = storyAdapter
 
         checkFollowings()
@@ -110,6 +113,7 @@ class HomeFragment : FragmentBase<FragmentHomeBinding>() {
         val postsRef = FirebaseDatabase.getInstance().reference.child("Posts")
 
         postsRef.addValueEventListener(object : ValueEventListener {
+            @SuppressLint("NotifyDataSetChanged")
             override fun onDataChange(p0: DataSnapshot) {
                 postList?.clear()
 
@@ -154,6 +158,7 @@ class HomeFragment : FragmentBase<FragmentHomeBinding>() {
         val storyRef = FirebaseDatabase.getInstance().reference.child("Story")
 
         storyRef.addValueEventListener(object : ValueEventListener {
+            @SuppressLint("NotifyDataSetChanged")
             override fun onDataChange(p0: DataSnapshot) {
                 val currentTime = System.currentTimeMillis()
 
@@ -176,7 +181,7 @@ class HomeFragment : FragmentBase<FragmentHomeBinding>() {
                     for (snapshot in p0.child(id).children) {
                         story = snapshot.getValue(StoryModel::class.java)
 
-                        if (currentTime > story!!.getTimeStart()!! && currentTime < story.getTimeEnd()!!) {
+                        if (currentTime > story!!.timestart!! && currentTime < story.timeend!!) {
                             countStory++
                         }
                     }

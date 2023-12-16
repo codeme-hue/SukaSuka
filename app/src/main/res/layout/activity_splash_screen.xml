@@ -16,11 +16,11 @@
 
         <ImageView
             android:id="@+id/imgSplashLogo"
-            android:layout_width="180dp"
-            android:layout_height="180dp"
+            android:layout_width="300dp"
+            android:layout_height="300dp"
             android:layout_gravity="center"
             android:layout_marginTop="100dp"
-            app:srcCompat="@drawable/ig_logo_1" />
+            app:srcCompat="@drawable/logo" />
 
         <TextView
             android:id="@+id/lblSplashTitle"
@@ -28,7 +28,6 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
             android:padding="10dp"
-            android:text="@string/SPLASH_SCREEN_APP_TITLE"
             android:textAlignment="center"
             android:textColor="@android:color/black"
             android:textSize="20sp"

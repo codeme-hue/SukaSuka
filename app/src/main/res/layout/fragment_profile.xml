@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar_layout_profile_frag"
@@ -169,7 +174,7 @@
                     <Button
                         android:id="@+id/edit_account_settings_btn"
                         android:layout_width="170dp"
-                        android:layout_height="32dp"
+                        android:layout_height="wrap_content"
                         android:text="@string/FRAGMENT_PROFILE_BTN_EDIT_PROFILE"
                         android:textAllCaps="false"
                         android:layout_marginTop="20dp"
@@ -231,9 +236,9 @@
                     android:src="@drawable/baseline_bookmark_black_48"
                     android:layout_weight="1"
                     android:scaleType="fitCenter"
-                    android:tint="@color/colorBlack"
                     style="?android:attr/buttonBarButtonStyle"
-                    android:contentDescription="@null"/>
+                    android:contentDescription="@null"
+                    app:tint="@color/colorBlack" />
 
             </LinearLayout>
 
@@ -257,3 +262,4 @@
     </RelativeLayout>
 
 </RelativeLayout>
+</androidx.core.widget.NestedScrollView>
